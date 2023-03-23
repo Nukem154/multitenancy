@@ -18,11 +18,11 @@ public class TenantService {
         initDatabase(name);
     }
 
-    public void initDatabase(String schema) {
+    private void initDatabase(String schemaName) {
         Flyway flyway = Flyway.configure()
                 .locations("db/migration/tenants")
                 .dataSource(dataSource)
-                .schemas(schema)
+                .schemas(schemaName)
                 .load();
         flyway.migrate();
     }

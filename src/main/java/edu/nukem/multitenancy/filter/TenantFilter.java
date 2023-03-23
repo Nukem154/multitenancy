@@ -2,7 +2,6 @@ package edu.nukem.multitenancy.filter;
 
 import edu.nukem.multitenancy.config.tenant.TenantContext;
 import edu.nukem.multitenancy.entity.master.User;
-import edu.nukem.multitenancy.repository.master.UserRepo;
 import edu.nukem.multitenancy.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -21,7 +20,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class TenantFilter extends OncePerRequestFilter {
 
-    private final UserRepo userRepo;
     private final UserService userService;
 
     @Override
@@ -29,11 +27,9 @@ public class TenantFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated()) {
-            System.out.println(TenantContext.getCurrentTenant());
             User user = (User) userService.loadUserByUsername(authentication.getName());
             TenantContext.setCurrentTenant(user.getTenant().getName());
         }
-        System.out.println(TenantContext.getCurrentTenant());
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }
